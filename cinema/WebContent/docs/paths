@@ -1,0 +1,12 @@
+<link href="http://localhost:8006/cinema/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="http://localhost:8006/cinema/Styles/default.css" rel="stylesheet" type="text/css" />
+<link href="http://localhost:8006/cinema/Styles/baseStyle.css" rel="stylesheet" type="text/css" />
+<!--[if lt IE 8]>
+    <link href="http://localhost:8006/cinema/Styles/ieStyle.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+<script src="http://localhost:8006/cinema/Scripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="http://localhost:8006/cinema/Scripts/jquery.infinitecarousel3.min.js" type="text/javascript"></script>
+<script src="http://localhost:8006/cinema/Scripts/easing.js" type="text/javascript"></script>
+<script src="http://localhost:8006/cinema/Scripts/slider.js" type="text/javascript"></script>
+
+ <s:if test="#movieInfo.lang!=Hindi">(<s:property value="#movieInfo.lang"/>)</s:if> (<s:property value="#movieInfo.cbRating"/>)

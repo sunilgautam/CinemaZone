@@ -1,0 +1,472 @@
+// private static Properties props = System.getProperties();
+	// private Authenticator auth;
+	// private Session session;
+	//
+	// public static final MailServiceUtil mailService = new MailServiceUtil();
+	//
+	// public class MailAuthenticator extends javax.mail.Authenticator {
+	// private String username;
+	// private String password;
+	//
+	// public MailAuthenticator(String username, String password) {
+	// this.username = username;
+	// this.password = password;
+	// }
+	//
+	// public PasswordAuthentication getPasswordAuthentication() {
+	// return new PasswordAuthentication(this.username, this.password);
+	// }
+	// }
+	//
+	// private MailServiceUtil() {
+	// init();
+	// }
+	//
+	// private void init() {
+	// auth = new MailAuthenticator(Constants.MAIL_AUTH_USERNAME,
+	// Constants.MAIL_AUTH_PASSWORD);
+	// session = Session.getInstance(props, this.auth);
+	// props.put("mail.smtp.host", Constants.MAIL_SERVER_HOST_ADDRESS);
+	// props.put("mail.smtp.port", Constants.MAIL_SERVER_PORT_NUMBER);
+	// props.put("mail.smtp.auth", "true");
+	// props.put("mail.smtp.sendpartial", "true");
+	// props.put("mail.smtp.protocol", Constants.MAIL_PROTOCOL);
+	// props.put("mail.from", Constants.MAIL_DEFAULT_FROM_EMAIL_ADDRESS);
+	// props.put("mail.user", Constants.MAIL_AUTH_USERNAME);
+	// props.put("mail.smtp.user", Constants.MAIL_AUTH_USERNAME);
+	// props.put("mail.smtp.starttls.enable", "true");
+	// }
+	//
+	// public void setMessage(String fromAddress, String[] toAddresses, String
+	// subject, String content) throws MessagingException {
+	// SMTPMessage message = new SMTPMessage(this.session);
+	// message.setFrom(new InternetAddress(fromAddress));
+	// InternetAddress[] toIntAdds = new InternetAddress[toAddresses.length];
+	//
+	// for (int i = 0; i < toAddresses.length; i++)
+	// {
+	// toIntAdds[i] = new InternetAddress(toAddresses[i]);
+	// }
+	//
+	// message.setRecipients(Message.RecipientType.TO, toIntAdds);
+	// message.setSubject(subject);
+	// message.setSentDate(new java.util.Date());
+	// message.setContent(content, "text/plain");
+	// setMailServer(message);
+	// }
+	//
+	// /********************************************************************
+	// * @Comments This method is used to set the SMTP server
+	// ********************************************************************/
+	// private void setMailServer(SMTPMessage message) throws MessagingException
+	// {
+	// SMPManagement objSMPM = SMPManagement.getInstance();
+	// SMTPTransport transport = (SMTPTransport)
+	// this.session.getTransport(objSMPM.getMailProtocol());
+	// transport.connect(objSMPM.getMailServerHostAddress(),
+	// objSMPM.getMailAuthorizedUserName(),
+	// objSMPM.getMailAuthorizedUserPassword());
+	// send(message, transport);
+	// }
+	//
+	// /********************************************************************
+	// * @Comments This method is used to send message
+	// ********************************************************************/
+	// private void send(SMTPMessage message, SMTPTransport transport) throws
+	// MessagingException, SendFailedException {
+	// message.saveChanges();
+	// transport.sendMessage(message, message.getAllRecipients());
+	// transport.close();
+	// }
+	
+	
+
+
+    public void SendMail() {
+	final String username = "sameerprsd2@gmail.com";
+	final String password = "password";
+
+	Properties props = new Properties();
+	props.put("mail.smtp.auth", "true");
+	props.put("mail.smtp.starttls.enable", "true");
+	props.put("mail.smtp.host", "smtp.gmail.com");
+	props.put("mail.smtp.port", "587");
+
+	Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+	    protected PasswordAuthentication getPasswordAuthentication() {
+		return new PasswordAuthentication(username, password);
+	    }
+	});
+
+	try {
+	    Message message = new MimeMessage(session);
+	    message.setFrom(new InternetAddress("sameerprsd2@gmail.com"));
+	    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("gautam.sunil01@gmail.com"));
+	    message.setSubject("Testing Subject");
+	    // message.setText("<h1>Dear Mail Crawler</h1>,<br /> <h3>No spam to my email, please!</h3>");
+	    message.setContent("<h1>Dear Mail Crawler</h1>,<br /> <h3>No spam to my email, please!</h3>", "text/html");
+	    Transport.send(message);
+
+	    System.out.println("Done");
+
+	} catch (MessagingException e) {
+	    throw new RuntimeException(e);
+	}
+    }
+    
+    
+public void send(String[] toAddresses, IMailTemplate template, String fromAddress, String personalName) throws MessagingException {
+	try {
+	    if (invoked) {
+		if (Constants.MAIL_SERVICE_ACTIVE) {
+		    Message message = new MimeMessage(this.session);
+		    // CHECK FOR THIS LINE
+		    if (fromAddress == null) {
+			message.setFrom(new InternetAddress(Constants.MAIL_DEFAULT_FROM_EMAIL_ADDRESS, Constants.MAIL_DEFAULT_FROM_EMAIL_ADDRESS_PERSONAL_NAME));
+		    } else {
+			message.setFrom(new InternetAddress(fromAddress, personalName));
+		    }
+		    InternetAddress[] toIntAdds = new InternetAddress[toAddresses.length];
+		    for (int i = 0; i < toAddresses.length; i++) {
+			toIntAdds[i] = new InternetAddress(toAddresses[i]);
+		    }
+
+		    message.setRecipients(Message.RecipientType.TO, toIntAdds);
+		    message.setSubject(template.subject());
+		    // message.setSentDate(new java.util.Date());
+		    // message.setContent(content, "text/plain");
+		    message.setContent(template.body(), "text/html");
+		    logger.info("Sending message ....");
+		    logger.info(message.getContent());
+		    Transport.send(message);
+		} else {
+		    logger.warn("Mail Service not active, unable to send email.");
+		}
+	    } else {
+		logger.warn("<Session> is not initialized, unable to send email.");
+	    }
+	} catch (MessagingException me) {
+	    logger.error("MessagingException in send(String[], IMailTemplate, String, String)" + me);
+	} catch (Exception ex) {
+	    logger.error("Exception in send(String[], IMailTemplate, String, String)" + ex);
+	}
+    }
+    
+    
+    
+<s:iterator value="daySchedules" var="daySchedule">
+        	<div class="schedule-block-day">
+        		<div class="schedule-block-day-part left">
+        			<label class="label-schedule-day" for=""><s:date name="#daySchedule.dateName" format="EEEE dd/MM/yyyy" /></label>
+        		</div>
+        		<div class="schedule-block-time-part left">
+        		<s:if test="#daySchedule.scheduled==true">
+					<s:if test="#daySchedule.canBooked==true">
+					<!-- LINKS ACTIVE FOR BOOKING -->
+					<s:iterator value="#daySchedule.schedules" var="schedule">
+						<div class="schedule-block-time-item left">
+        					<label class="label-schedule-mvname left" for="">
+        						<span class="ui-icon ui-icon-video left"></span>
+        						<s:property value="#schedule.movieName" />
+        					</label>
+							<s:a cssClass="label-schedule-mvtime left" action="bookings">
+								<s:property value="#schedule.scheduleTime" />
+							</s:a>
+							<label class="label-schedule-mvscr left" for=""><s:property value="#schedule.screenName" /></label>
+							<span class="label-schedule-toggle-icon ui-icon ui-icon-circle-arrow-s" data-status="N" data-ref='<s:property value="#schedule.movieId" />'></span>
+							<div class="schedule-block-time-item-desc">
+								
+							</div>
+        				</div>
+					</s:iterator>
+					</s:if>
+					<s:else>
+					<!-- LINKS NOT ACTIVE FOR BOOKING -->
+					<s:iterator value="#daySchedule.schedules" var="schedule">
+						<div class="schedule-block-time-item left">
+        					<label class="label-schedule-mvname left" for="">
+        						<span class="ui-icon ui-icon-video left"></span>
+        						<s:property value="#schedule.movieName" />
+        					</label>
+							<s:property value="#schedule.scheduleTime" />
+							<label class="label-schedule-mvscr left" for=""><s:property value="#schedule.screenName" /></label>
+							<span class="label-schedule-toggle-icon ui-icon ui-icon-circle-arrow-s" data-status="N" data-ref='<s:property value="#schedule.movieId" />'></span>
+							<div class="schedule-block-time-item-desc">
+								
+							</div>
+        				</div>
+					</s:iterator>
+					</s:else>
+				</s:if>
+				<s:else>
+					<!-- NOTHING -->
+					<s:iterator value="#daySchedule.schedules" var="schedule">
+						
+					</s:iterator>
+				</s:else>
+        		</div>
+        		<div class="clear"></div>
+        	</div>
+        	</s:iterator>
+        	
+package cinema.main.action;
+
+import cinema.common.BaseAction;
+
+public class BookingManager extends BaseAction {
+    private static final long serialVersionUID = 1L;
+    
+    public String bookingInput() throws Exception {
+        return "";
+    }
+    
+    public String seatSelection() throws Exception {
+        return "";
+    }
+    
+    public String getUser() throws Exception {
+        return "";
+    }
+    
+    public String bookingDetails() throws Exception {
+        return "";
+    }
+    
+    public String paymentInput() throws Exception {
+        return "";
+    }
+    
+    public String paymentProcess() throws Exception {
+        return "";
+    }
+}
+
+
+
+package cinema.main.action;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+
+import cinema.admin.action.MovieAdd;
+import cinema.common.BaseAction;
+import cinema.dbaccess.DBAccess;
+import cinema.domain.pojo.Schedule;
+import cinema.domain.pojo.SeatRow;
+
+public class BookingSelectSeat extends BaseAction {
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(BookingSelectSeat.class);
+    
+    private List<SeatRow> seatrows;
+    private List<String> seattypes;
+    private Schedule schedule;
+    private String scheduleId;
+    private String movieId;
+    private boolean isScheduleOk;
+    private String screenAndShows;
+    private String showClasses;
+    private String noOfSeats;
+    private String date;
+    private String scheduleTime;
+    private String screenId;
+    
+    @Override
+    public void validate() {
+	logger.info("[Validating::" + BookingSelectSeat.class + "]");
+	if (this.getScheduleId() == null || this.getScheduleId().equals("")) {
+	    addActionError(getText("booking.no.scheduleid"));
+	}
+	
+	if (this.getMovieId() == null || this.getMovieId().equals("")) {
+	    addActionError(getText("booking.no.scheduleid"));
+	}
+	
+	if (this.getScreenAndShows() == null || this.getScreenAndShows().equals("")) {
+	    addActionError(getText("booking.no.scheduleid"));
+	}
+	
+	if (this.getShowClasses() == null || this.getShowClasses().equals("")) {
+	    addActionError(getText("booking.no.scheduleid"));
+	}
+	
+	if (this.getNoOfSeats() == null || this.getNoOfSeats().equals("")) {
+	    addActionError(getText("booking.no.scheduleid"));
+	}
+	
+	if (this.getDate() == null || this.getDate().equals("")) {
+	    addActionError(getText("booking.no.scheduleid"));
+	}
+	
+	// GET SCHEDULE ID
+	String[] strArr = this.getScreenAndShows().split(":");
+	if(strArr.length == 2)
+	{
+	    screenId = strArr[0];
+	    screenId = strArr[1];
+	}
+	else
+	{
+	    addActionError(getText("booking.no.scheduleid"));
+	}
+    }
+    
+    @Override
+    public String execute() throws Exception {
+	logger.info("[Executing::" + BookingSelectSeat.class + "]");
+	if (getServletRequestObject().getMethod().equals("POST")) {
+	    DBAccess dbObj = new DBAccess();
+	    seatrows = dbObj.getSeatConfiguration(patternid);
+	    seattypes = dbObj.getSeatTypeDetails(patternid);
+	} else {
+	    logger.error("ONLY POST METHOD ALLOWED");
+	}
+	return "success";
+        return "step-select-seats";
+    }
+
+    public List<SeatRow> getSeatrows() {
+        return seatrows;
+    }
+
+    public void setSeatrows(List<SeatRow> seatrows) {
+        this.seatrows = seatrows;
+    }
+
+    public List<String> getSeattypes() {
+        return seattypes;
+    }
+
+    public void setSeattypes(List<String> seattypes) {
+        this.seattypes = seattypes;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public String getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(String scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
+    public String getMovieId() {
+	return movieId;
+    }
+
+    public void setMovieId(String movieId) {
+	this.movieId = movieId;
+    }
+
+    public boolean isScheduleOk() {
+	return isScheduleOk;
+    }
+
+    public void setScheduleOk(boolean isScheduleOk) {
+	this.isScheduleOk = isScheduleOk;
+    }
+
+    public String getScreenAndShows() {
+        return screenAndShows;
+    }
+
+    public void setScreenAndShows(String screenAndShows) {
+        this.screenAndShows = screenAndShows;
+    }
+
+    public String getShowClasses() {
+        return showClasses;
+    }
+
+    public void setShowClasses(String showClasses) {
+        this.showClasses = showClasses;
+    }
+
+    public String getNoOfSeats() {
+        return noOfSeats;
+    }
+
+    public void setNoOfSeats(String noOfSeats) {
+        this.noOfSeats = noOfSeats;
+    }
+
+    public String getDate() {
+	return date;
+    }
+
+    public void setDate(String date) {
+	this.date = date;
+    }
+
+    public String getScheduleTime() {
+        return scheduleTime;
+    }
+
+    public void setScheduleTime(String scheduleTime) {
+        this.scheduleTime = scheduleTime;
+    }
+
+    public String getScreenId() {
+        return screenId;
+    }
+
+    public void setScreenId(String screenId) {
+        this.screenId = screenId;
+    }
+}
+
+if (seat.hasClass("yellow")) {
+				// UNSELECT
+				console.log('UNSELECT');
+				var seatStrTmp = new Array();
+//				for(var i = 0; i < arrStr.length; i++) {
+//					console.log(arrStr[i] + ' || ' + row + ":" + cell);
+//					if(arrStr[i] == row + ":" + cell) {
+//						arrStr.pop(arrStr[i]);
+//						break;
+//					}
+//				}
+				arrStr.pop(row + ":" + cell);
+				targetSeatSelection.val(arrStr.join("$$"));
+				seat.removeClass("yellow");
+			} else {
+				// SELECT
+				console.log('SELECT');
+				if(arrStr.length > maxSeatSelection) {
+					alert("Maximum seats selected");
+				} else {
+					arrStr.push(row + ":" + cell);
+					targetSeatSelection.val(arrStr.join("$$"));
+					seat.addClass("yellow");
+				}
+			}
+			
+			
+// PDF
+Document document = new Document();
+	try
+	{
+	    HttpServletResponse response = getServletResponseObject();
+	    response.setContentType("application/pdf");
+	    PdfWriter.getInstance(document, response.getOutputStream());
+	    document.open();
+	    document.add(new Paragraph("Hello Kiran"));
+	    document.add(new Paragraph(new Date().toString()));
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+	document.close();
+	return null;
+	
+<!-- <li><img width="630" height="230" alt="" src="<s:property value='#slider.sliderPic'/>" /></li> -->

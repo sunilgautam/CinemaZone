@@ -1,0 +1,45 @@
+// API callback
+youtubeFeedCallback({
+ "apiVersion": "2.1",
+ "data": {
+  "id": "FyDLkB6A_TY",
+  "uploaded": "2012-05-24T17:44:04.000Z",
+  "updated": "2012-11-15T22:06:11.000Z",
+  "uploader": "foxstarindia",
+  "category": "Entertainment",
+  "title": "'Bol Bachchan' - Official Trailer",
+  "description": "Join us on http://www.Facebook.com/TheBolBachchan and Follow us on http://www.Twitter.com/TheBolBachchan\n\n'Bol Bachchan' is an upcoming Bollywood romantic comedy film directed by Rohit Shetty and featuring Ajay Devgn, Abhishek Bachchan, Asin Thottumkal and Prachi Desai in lead roles. It is inspired by the 1979 comic flick, Gol Maal.\n\n'Bol Bachchan' releases on 6th July, 2012 in theaters near you.\n\nFor the latest 'Bol Bachchan' trailers, promos and more, log on and subscribe to http://www.YouTube.com/FoxStarIndia",
+  "thumbnail": {
+   "sqDefault": "http://localhost:3500/cinema/default.jpg",
+   "hqDefault": "http://localhost:3500/cinema/default.jpg"
+  },
+  "player": {
+   "default": "http://www.youtube.com/watch?v=FyDLkB6A_TY&feature=youtube_gdata_player",
+   "mobile": "http://m.youtube.com/details?v=FyDLkB6A_TY"
+  },
+  "content": {
+   "5": "http://www.youtube.com/v/FyDLkB6A_TY?version=3&f=videos&app=youtube_gdata",
+   "1": "rtsp://v7.cache5.c.youtube.com/CiILENy73wIaGQk2_YAekMsgFxMYDSANFEgGUgZ2aWRlb3MM/0/0/0/video.3gp",
+   "6": "rtsp://v1.cache4.c.youtube.com/CiILENy73wIaGQk2_YAekMsgFxMYESARFEgGUgZ2aWRlb3MM/0/0/0/video.3gp"
+  },
+  "duration": 159,
+  "aspectRatio": "widescreen",
+  "rating": 4.114222,
+  "likeCount": "2447",
+  "ratingCount": 3143,
+  "viewCount": 2462523,
+  "favoriteCount": 0,
+  "commentCount": 1734,
+  "accessControl": {
+   "comment": "allowed",
+   "commentVote": "allowed",
+   "videoRespond": "moderated",
+   "rate": "allowed",
+   "embed": "allowed",
+   "list": "allowed",
+   "autoPlay": "allowed",
+   "syndicate": "allowed"
+  }
+ }
+}
+);

@@ -1,0 +1,128 @@
+USE [cinema]
+GO
+/****** Object:  StoredProcedure [dbo].[BOOKINGS_GET]    Script Date: 11/24/2012 22:33:35 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[BOOKINGS_GET]
+(
+	@PARA			VARCHAR(30) = '',
+	@BOOKING_DATETIME DATETIME = NULL,
+	@BOOKING_DATE_STR VARCHAR(15) = '',
+	@MOVIE_ID		BIGINT = 0,
+	@SCREEN_ID		INT = 0,
+	@SCHEDULE_ID	BIGINT = 0,
+	@CLASS_ID		INT = 0
+)
+AS
+BEGIN
+	DECLARE @BOOKING_DATE DATE
+	IF @BOOKING_DATETIME IS NULL
+	BEGIN
+		SET @BOOKING_DATETIME = GETDATE();
+	END
+	
+	SET @BOOKING_DATE = CONVERT(DATE, @BOOKING_DATE_STR)
+	--PRINT @BOOKING_DATE
+	
+	IF @PARA = 'GETSCREENSSHOWS'
+	BEGIN
+		SELECT DISTINCT schedules.screen_id, 
+						screens.screen, 
+						schedule_id, 
+						schedule_date, 
+						CONVERT(VARCHAR, schedule_time, 100) AS 'schedule_time'
+		FROM schedules INNER JOIN movies
+		ON	 schedules.movie_id = movies.movie_id
+		INNER JOIN screens
+		ON	 schedules.screen_id = screens.screen_id
+		WHERE schedule_date = @BOOKING_DATE
+		--AND schedule_time > CONVERT(TIME(0),@BOOKING_DATETIME)
+		AND schedules.movie_id = @MOVIE_ID
+		AND movies.active_flg = 1
+		AND schedules.active_flg = 1
+		ORDER BY schedules.screen_id, schedule_time
+	END
+	ELSE IF @PARA = 'GETCLASS'
+	BEGIN
+		SELECT seat_type_id, seat_type
+		FROM seat_types
+		WHERE active_flg = 1
+		ORDER BY base_price, seat_type_id
+	END
+	ELSE IF @PARA = 'GETCURRENTSEATSTATUS'
+	BEGIN
+		DECLARE @SEAT_PATTERN_ID INT
+		
+		SET @SCREEN_ID = 0
+		SELECT @SEAT_PATTERN_ID = SC.seat_pattern_id
+		FROM screens SC INNER JOIN schedules SH
+		ON SC.screen_id = SH.screen_id
+		WHERE SH.schedule_id = @SCHEDULE_ID 
+		AND SH.active_flg = 1
+		AND SC.active_flg = 1
+		
+		IF ISNULL(@SEAT_PATTERN_ID, 0) <> 0
+		BEGIN
+			SELECT	seat_config_id, 
+			seat_pattern_id, 
+			seat_type_id, 
+			seat_row, 
+			seat_no, 
+			seat_token
+			FROM seat_config
+			WHERE seat_pattern_id = @SEAT_PATTERN_ID
+			AND seat_config_id NOT IN 
+			(
+				SELECT	B.seat_config_id
+				FROM seat_config S INNER JOIN bookings B
+				ON B.seat_config_id = S.seat_config_id
+				WHERE B.booked_flg = 1
+				AND   B.schedule_id = @SCHEDULE_ID
+			)
+			UNION
+			SELECT	B1.seat_config_id, 
+					seat_pattern_id, 
+					seat_type_id, 
+					seat_row, 
+					seat_no, 
+					CASE WHEN B1.booked_flg = 1 THEN 2 ELSE 1 END AS seat_token
+			FROM seat_config S INNER JOIN bookings B1
+			ON B1.seat_config_id = S.seat_config_id
+			WHERE B1.schedule_id = @SCHEDULE_ID
+		END
+		ELSE
+		BEGIN
+			PRINT 'SEAT PATTERN NOT FOUND'
+		END
+	END
+	ELSE IF @para = 'GETSEATTYPESBYSCHEDULEID'
+	BEGIN
+		DECLARE @SEAT_PATTERN_ID_1 INT
+		
+		SET @SCREEN_ID = 0
+		SELECT @SEAT_PATTERN_ID_1 = SC.seat_pattern_id
+		FROM screens SC INNER JOIN schedules SH
+		ON SC.screen_id = SH.screen_id
+		WHERE SH.schedule_id = @SCHEDULE_ID 
+		AND SH.active_flg = 1
+		AND SC.active_flg = 1
+		
+		IF ISNULL(@SEAT_PATTERN_ID_1, 0) <> 0
+		BEGIN		
+			SELECT	(SELECT dbo.GetFirstAndLast('FIRST', @SEAT_PATTERN_ID_1, seat_type_id)) + '-' + (SELECT dbo.GetFirstAndLast('LAST', @SEAT_PATTERN_ID_1, seat_type_id)), 
+					seat_type
+			FROM	seat_types
+		END
+		ELSE
+		BEGIN
+			PRINT 'SEAT PATTERN NOT FOUND'
+		END
+	END
+	ELSE
+	BEGIN
+		PRINT 'INVALID PARAMETER'
+	END
+END

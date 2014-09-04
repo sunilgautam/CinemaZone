@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.custom.i18n.resources" value="MessageResource" />
+	<constant name="struts.multipart.saveDir" value="/tmp" />
+	<constant name="struts.multipart.maxSize" value="104857600" />
+	
+	<package name="default" namespace="/" extends="struts-default">
+		<interceptors>
+			<interceptor class="cinema.util.SessionInterceptor" name="sessionInterceptor"></interceptor>			
+			<interceptor-stack name="sessionStack">
+				<interceptor-ref name="sessionInterceptor"></interceptor-ref>				
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="store">
+      				<param name="operationMode">AUTOMATIC</param>
+    			</interceptor-ref>
+			</interceptor-stack>
+			<interceptor-stack name="noSessionInterceptor">
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="store">
+      				<param name="operationMode">AUTOMATIC</param>
+    			</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>	
+		<default-interceptor-ref name="noSessionInterceptor"></default-interceptor-ref>
+  		<default-action-ref name="error404"></default-action-ref>
+		
+		<global-results>
+			<result name="securityerror">/errors/securityerror.jsp</result>
+			<result name="error">/errors/error.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="org.apache.struts.register.exceptions.SecurityBreachException" result="securityerror" />
+			<exception-mapping exception="java.lang.Exception" result="error" />
+		</global-exception-mappings>
+		
+		<action name="error404">
+			<result>/errors/error404.html</result>
+		</action>
+		<action name="logout" class="cinema.common.logout">
+			<result name="success" type="redirect">/index.jsp</result>
+		</action>
+		
+		<action name="home" class="cinema.main.action.Home">
+			<result>home.jsp</result>
+		</action>
+		
+		<action name="login">
+			<result>user_login.jsp</result>
+		</action>
+		<action name="user_login" class="cinema.main.action.UserLogin">
+			<result name="input">main/_json/result.jsp</result>
+			<result name="success">main/_json/result.jsp</result>
+		</action>
+		
+		<action name="register" class="cinema.main.action.UsersPreProcess">
+			<result name="success">user_register.jsp</result>
+		</action>
+		<action name="user_register" class="cinema.main.action.Users" method="register">
+			<param name="mode">ADD</param>
+			<result name="input">main/_json/result.jsp</result>
+			<result name="success">main/_json/result.jsp</result>
+		</action>
+		
+		<action name="movies-details" class="cinema.main.action.MovieDetail">
+			<result name="success">/main/_movies/details.jsp</result>
+		</action>
+		<action name="movies-details-part" class="cinema.main.action.MovieDetail">
+			<result name="success">/main/_movies/details-part.jsp</result>
+		</action>
+		
+		<action name="movies" class="cinema.main.action.MovieIndex">
+			<result name="success">/main/_movies/index.jsp</result>
+		</action>
+		
+		<action name="trailers" class="cinema.main.action.TrailerIndex">
+			<result name="success">/main/_trailers/index.jsp</result>
+		</action>
+		<action name="trailers-list" class="cinema.main.action.TrailerList">
+			<result name="success">/main/_json/result.jsp</result>
+		</action>
+		
+		<action name="search-movies" class="cinema.main.action.SearchMovieDetail">
+			<result name="success">/main/_movies/search.jsp</result>
+		</action>
+		
+		<action name="schedules" class="cinema.main.action.ScheduleIndex">
+			<result name="success">/main/_schedules/index.jsp</result>
+		</action>
+		
+		<action name="bookings" class="cinema.main.action.BookingInput">
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result name="step-input">/main/_bookings/booking-input.jsp</result>
+		</action>
+		<action name="booking-pre-seats" class="cinema.main.action.BookingPreSelectSeat">
+			<result type="redirect" name="input">schedules</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result type="redirect" name="step-select-seats">booking-seats</result>
+		</action>
+		<action name="booking-seats" class="cinema.main.action.BookingSelectSeat">
+			<result type="redirect" name="input">schedules</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result name="step-select-seats">/main/_bookings/booking-seats.jsp</result>
+		</action>
+		<action name="booking-pre-user" class="cinema.main.action.BookingPreUser">
+			<result type="redirect" name="input">schedules</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result type="redirect" name="step-select-seats">booking-seats</result>
+			<result type="redirect" name="step-get-user">booking-user</result>
+			<result type="redirect" name="step-details">booking-details</result>
+		</action>
+		<action name="booking-user" class="cinema.main.action.BookingUser">
+			<result type="redirect" name="input">schedules</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result type="redirect" name="step-select-seats">booking-seats</result>
+			<result name="step-get-user">/main/_bookings/booking-user.jsp</result>
+			<result type="redirect" name="step-details">booking-details</result>
+		</action>
+		<action name="booking-post-user" class="cinema.main.action.BookingPostUser">
+			<result type="redirect" name="input">schedules</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result type="redirect" name="step-select-seats">booking-seats</result>
+			<result type="redirect" name="step-get-user">booking-user</result>
+			<result type="redirect" name="step-details">booking-details</result>
+		</action>
+		<action name="booking-details" class="cinema.main.action.BookingDetails">
+			<result type="redirect" name="input">schedules</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result type="redirect" name="step-select-seats">booking-seats</result>
+			<result type="redirect" name="step-get-user">booking-user</result>
+			<result name="step-details">/main/_bookings/booking-details.jsp</result>
+		</action>
+		<action name="booking-payment" class="cinema.main.action.BookingPrePayment">
+			<result type="redirect" name="input">schedules</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result type="redirect" name="step-select-seats">booking-seats</result>
+			<result type="redirect" name="step-get-user">booking-user</result>
+			<result type="redirect" name="step-details">booking-details</result>
+			<result name="step-payment">/main/_bookings/booking-payment.jsp</result>
+		</action>
+		<action name="booking-post-payment" class="cinema.main.action.BookingPostPayment">
+			<result type="redirect" name="step-payment-process">booking-pre-process-payment</result>
+			<result type="redirect" name="step-payment-error">booking-process-payment</result>
+		</action>
+		<action name="booking-pre-process-payment">
+			<result>/main/_bookings/booking-payment-process.jsp</result>
+		</action>
+		<action name="booking-process-payment" class="cinema.main.action.BookingPaymentProcess">
+			<result type="redirect" name="input">booking-process-payment</result>
+			<result name="step-payment-result">/main/_bookings/booking-payment-result.jsp</result>
+		</action>
+		<action name="booking-user-test" class="cinema.main.action.BookingUser">
+			<result name="input">/main/_bookings/booking-seats.jsp</result>
+			<result type="redirect" name="step-schedule">schedules</result>
+			<result type="redirect" name="step-input">bookings</result>
+			<result type="redirect" name="step-select-seats">booking-seats</result>
+			<result name="step-get-user">/main/_bookings/booking-user.jsp</result>
+			<result name="step-details">/main/_bookings/booking-details.jsp</result>
+			<result name="step-payment">/main/_bookings/booking-payment.jsp</result>
+			<result name="step-success">/main/_bookings/booking-success.jsp</result>
+		</action>
+		
+		<action name="mail" class="test.mail">
+			<result name="success">/test/d1p.jsp</result>
+		</action>
+	</package>
+	
+	<package name="json-package" namespace="/" extends="json-default">
+      <action name="json" class="test.json">
+			<result type="json"></result>
+			<param name="callbackParameter">callback</param>
+		</action>
+    </package>
+	
+	<package name="cinema_admin" namespace="/admin" extends="struts-default">
+		<interceptors>
+			<interceptor class="cinema.util.SessionInterceptor" name="sessionInterceptor"></interceptor>			
+			<interceptor-stack name="sessionStack">
+				<interceptor-ref name="sessionInterceptor"></interceptor-ref>				
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="store">
+      				<param name="operationMode">AUTOMATIC</param>
+    			</interceptor-ref>
+			</interceptor-stack>
+			<interceptor-stack name="noSessionInterceptor">
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="store">
+      				<param name="operationMode">AUTOMATIC</param>
+    			</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>	
+		<default-interceptor-ref name="sessionStack"></default-interceptor-ref>
+  		<default-action-ref name="error404"></default-action-ref>
+		
+		<global-results>
+			<result name="login">/admin_login.jsp</result>
+			<result name="securityerror">/errors/securityerror.jsp</result>
+			<result name="error">/errors/error.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="org.apache.struts.register.exceptions.SecurityBreachException" result="securityerror" />
+			<exception-mapping exception="java.lang.Exception" result="error" />
+		</global-exception-mappings>
+		
+		<action name="error404">
+			<result>/errors/error404.html</result>
+			<interceptor-ref name="noSessionInterceptor"></interceptor-ref>
+		</action>
+		<action name="login">
+			<result>/admin_login.jsp</result>
+			<interceptor-ref name="noSessionInterceptor"></interceptor-ref>
+		</action>
+		<action name="admin_login" class="cinema.admin.action.AdminLogin">
+			<result name="input">/admin_login.jsp</result>
+			<result name="success" type="redirect">home</result>
+			<interceptor-ref name="noSessionInterceptor"></interceptor-ref>
+		</action>
+		<action name="home">
+			<result>/admin/home.jsp</result>
+		</action>
+		
+		<!--==================={ SCREEN }===================-->
+		<action name="screens" class="cinema.admin.action.ScreenIndex">
+			<result name="success">/admin/_screens/index.jsp</result>
+		</action>
+		
+		<action name="screens-add" class="cinema.admin.action.ScreenPreProcess">
+			<result>/admin/_screens/add.jsp</result>
+		</action>
+		<action name="screens-add-process" class="cinema.admin.action.ScreenAdd">
+			<param name="mode">ADD</param>
+			<result name="input">/admin/_screens/add.jsp</result>
+			<result name="success" type="redirect">screens-view?screenId=${screenId}</result>
+		</action>
+		
+		<action name="screens-edit" class="cinema.admin.action.ScreenView">
+			<result name="success">/admin/_screens/edit.jsp</result>
+		</action>
+		<action name="screens-edit-process" class="cinema.admin.action.ScreenAdd">
+			<param name="mode">EDIT</param>
+			<result name="input">/admin/_screens/edit.jsp</result>
+			<result name="success" type="redirect">screens-view?screenId=${screenId}</result>
+		</action>
+		
+		<action name="screens-delete-process" class="cinema.admin.action.ScreenDelete">
+			<result name="input" type="redirect">screens</result>
+			<result name="success" type="redirect">screens</result>
+		</action>
+		
+		<action name="screens-view" class="cinema.admin.action.ScreenView">
+			<result name="success">/admin/_screens/view.jsp</result>
+		</action>
+		<!--==================={ SCREEN END }===================-->
+		
+		<!--==================={ SEAT PATTERN END }===================-->
+		<action name="seatpattern" class="cinema.admin.action.SeatPatternView">
+			<result name="success">/admin/_seat_pattern/view.jsp</result>
+			<result name="input">/admin/_seat_pattern/view.jsp</result>
+		</action>
+		<!--==================={ SEAT PATTERN END }===================-->
+		
+		<!--==================={ MOVIE }===================-->
+		<action name="movies" class="cinema.admin.action.MovieIndex">
+			<result name="success">/admin/_movies/index.jsp</result>
+		</action>
+		
+		<action name="movies-removed" class="cinema.admin.action.MovieRemoved">
+			<result name="success">/admin/_movies/removed.jsp</result>
+		</action>
+		
+		<action name="movies-add">
+			<result>/admin/_movies/add.jsp</result>
+		</action>
+		<action name="movies-add-process" class="cinema.admin.action.MovieAdd">
+			<param name="mode">ADD</param>
+			<result name="input">/admin/_movies/add.jsp</result>
+			<result name="success" type="redirect">movies-view?movieId=${movieId}</result>
+		</action>
+		
+		<action name="movies-edit" class="cinema.admin.action.MovieView">
+			<result name="success">/admin/_movies/edit.jsp</result>
+		</action>
+		<action name="movies-edit-process" class="cinema.admin.action.MovieAdd">
+			<param name="mode">EDIT</param>
+			<result name="input">/admin/_movies/edit.jsp</result>
+			<result name="success" type="redirect">movies-view?movieId=${movieId}</result>
+		</action>
+		
+		<action name="movies-delete-process" class="cinema.admin.action.MovieDelete">
+			<result name="input" type="redirect">movies</result>
+			<result name="success" type="redirect">movies</result>
+		</action>
+		
+		<action name="movies-view" class="cinema.admin.action.MovieView">
+			<result name="success">/admin/_movies/view.jsp</result>
+		</action>
+		<!--==================={ MOVIE END }===================-->
+		
+		<!--==================={ TRAILERS }===================-->
+		<action name="trailers" class="cinema.admin.action.TrailerIndex">
+			<result name="success">/admin/_trailers/index.jsp</result>
+		</action>
+		
+		<action name="trailers-add" class="cinema.admin.action.TrailerPreProcess">
+			<result>/admin/_trailers/add.jsp</result>
+		</action>
+		<action name="trailers-add-process" class="cinema.admin.action.TrailerAdd">
+			<param name="mode">ADD</param>
+			<result name="input">/admin/_trailers/add.jsp</result>
+			<result name="success" type="redirect">trailers-view?trailerId=${trailerId}</result>
+		</action>
+		
+		<action name="trailers-edit" class="cinema.admin.action.TrailerView">
+			<result name="success">/admin/_trailers/edit.jsp</result>
+		</action>
+		<action name="trailers-edit-process" class="cinema.admin.action.TrailerAdd">
+			<param name="mode">EDIT</param>
+			<result name="input">/admin/_trailers/edit.jsp</result>
+			<result name="success" type="redirect">trailers-view?trailerId=${trailerId}</result>
+		</action>
+		
+		<action name="trailers-delete-process" class="cinema.admin.action.TrailerDelete">
+			<result name="input" type="redirect">trailers</result>
+			<result name="success" type="redirect">trailers</result>
+		</action>
+		<action name="trailers-view" class="cinema.admin.action.TrailerView">
+			<result name="success">/admin/_trailers/view.jsp</result>
+		</action>
+		<!--==================={ TRAILERS END }===================-->
+		
+		<!--==================={ TICKET COSTS }===================-->
+		<action name="tickets" class="cinema.admin.action.TicketCostIndex">
+			<result name="success">/admin/_tickets/index.jsp</result>
+		</action>
+		
+		<action name="tickets-edit" class="cinema.admin.action.TicketCostView">
+			<result name="success">/admin/_tickets/edit.jsp</result>
+		</action>
+		<action name="tickets-edit-process" class="cinema.admin.action.TicketCostAdd">
+			<param name="mode">EDIT</param>
+			<result name="input">/admin/_tickets/edit.jsp</result>
+			<result name="success" type="redirect">tickets-view?ticketCostId=${ticketCostId}</result>
+		</action>
+		
+		<action name="tickets-view" class="cinema.admin.action.TicketCostView">
+			<result name="success">/admin/_tickets/view.jsp</result>
+		</action>
+		<!--==================={ TICKET COSTS END }===================-->
+		
+		<!--==================={ POSTERS }===================-->
+		<action name="posters" class="cinema.admin.action.MovieIndex">
+			<result name="success">/admin/_posters/index.jsp</result>
+		</action>
+		
+		<action name="posters-manage" class="cinema.admin.action.PosterView">
+			<result>/admin/_posters/manage.jsp</result>
+		</action>
+		
+		<action name="posters-add-process" class="cinema.admin.action.PosterUpload">
+			<result name="input">/admin/_json/result.jsp</result>
+			<result name="success">/admin/_json/result.jsp</result>
+		</action>
+		
+		<action name="posters-edit-process" class="cinema.admin.action.PosterEdit">
+			<param name="mode">EDIT</param>
+			<result name="input">/admin/_json/result.jsp</result>
+			<result name="success">/admin/_json/result.jsp</result>
+		</action>
+		
+		<action name="posters-delete-process" class="cinema.admin.action.PosterDelete">
+			<result name="input">/admin/_json/result.jsp</result>
+			<result name="success">/admin/_json/result.jsp</result>
+		</action>
+		
+		<action name="posters-view" class="cinema.admin.action.PosterView">
+			<result name="success">/admin/_posters/view.jsp</result>
+		</action>
+		<!--==================={ POSTERS END }===================-->
+		
+		<!--==================={ SLIDER }===================-->
+		<action name="sliders" class="cinema.admin.action.SliderIndex">
+			<result name="success">/admin/_sliders/index.jsp</result>
+		</action>
+		
+		<action name="sliders-add" class="cinema.admin.action.SliderPreProcess">
+			<result>/admin/_sliders/add.jsp</result>
+		</action>
+		<action name="sliders-add-process" class="cinema.admin.action.SliderAdd">
+			<param name="mode">ADD</param>
+			<result name="input">/admin/_sliders/add.jsp</result>
+			<result name="success" type="redirect">sliders-view?sliderId=${sliderId}</result>
+		</action>
+		
+		<action name="sliders-upload-process" class="cinema.admin.action.SliderUpload">
+			<result name="input">/admin/_json/result.jsp</result>
+			<result name="success">/admin/_json/result.jsp</result>
+		</action>
+		
+		<action name="sliders-delete-process" class="cinema.admin.action.SliderDelete">
+			<result name="input" type="redirect">sliders</result>
+			<result name="success" type="redirect">sliders</result>
+		</action>
+		
+		<action name="sliders-view" class="cinema.admin.action.SliderView">
+			<result name="success">/admin/_sliders/view.jsp</result>
+		</action>
+		<!--==================={ SLIDER END }===================-->
+		
+		<!--==================={ SCHEDULE }===================-->
+		<action name="schedules" class="cinema.admin.action.ScheduleIndex">
+			<result name="success">/admin/_schedules/index.jsp</result>
+		</action>
+		
+		<action name="schedules-add" class="cinema.admin.action.SchedulePreProcess">
+			<result>/admin/_schedules/add.jsp</result>
+		</action>
+		<action name="schedules-schedule-process" class="cinema.admin.action.ScheduleSchedule">
+			<result name="input">/admin/_json/result.jsp</result>
+			<result name="success">/admin/_json/result.jsp</result>
+		</action>
+		
+		<action name="schedules-reschedule-process" class="cinema.admin.action.ScheduleReschedule">
+			<result name="input">/admin/_json/result.jsp</result>
+			<result name="success">/admin/_json/result.jsp</result>
+		</action>
+		
+		<action name="schedules-view" class="cinema.admin.action.ScheduleView">
+			<result name="success">/admin/_schedules/view.jsp</result>
+			<result name="input">/admin/_schedules/view.jsp</result>
+		</action>
+		<!--==================={ SCHEDULE END }===================-->
+		
+		<!--==================={ REVIEW }===================-->
+		<action name="reviews" class="cinema.admin.action.ReviewIndex">
+			<result name="success">/admin/_reviews/index.jsp</result>
+		</action>
+		
+		<action name="reviews-add" class="cinema.admin.action.ReviewPreProcess">
+			<result>/admin/_reviews/add.jsp</result>
+		</action>
+		<action name="reviews-add-process" class="cinema.admin.action.ReviewAdd">
+			<param name="mode">ADD</param>
+			<result name="input">/admin/_reviews/add.jsp</result>
+			<result name="success" type="redirect">reviews-view?reviewId=${reviewId}</result>
+		</action>
+		
+		<action name="reviews-edit" class="cinema.admin.action.ReviewView">
+			<result name="success">/admin/_reviews/edit.jsp</result>
+		</action>
+		<action name="reviews-edit-process" class="cinema.admin.action.ReviewAdd">
+			<param name="mode">EDIT</param>
+			<result name="input">/admin/_reviews/edit.jsp</result>
+			<result name="success" type="redirect">reviews-view?reviewId=${reviewId}</result>
+		</action>
+		
+		<action name="reviews-delete-process" class="cinema.admin.action.ReviewDelete">
+			<result name="input" type="redirect">reviews</result>
+			<result name="success" type="redirect">reviews</result>
+		</action>
+		
+		<action name="reviews-view" class="cinema.admin.action.ReviewView">
+			<result name="success">/admin/_reviews/view.jsp</result>
+		</action>
+		<!--==================={ REVIEW END }===================-->
+	</package>
+</struts>

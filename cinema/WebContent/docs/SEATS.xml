@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Customer CustomerId="JH01" CustomerName="John">
+	<Order OrderId="1001" Customer="JH01" OrderDate="2006-07-04T00:00:00">
+		<OrderDetail ProductId="11" Quantity="12" />
+		<OrderDetail ProductId="12" Quantity="28" />
+	</Order>
+</Customer>

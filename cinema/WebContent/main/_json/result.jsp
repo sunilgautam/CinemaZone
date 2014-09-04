@@ -1,0 +1,1 @@
+<%@ page language="java" contentType="text/plain; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%><%@ taglib uri="/struts-tags" prefix="s"%><s:property escapeHtml="false" value="jsonResponse"/>

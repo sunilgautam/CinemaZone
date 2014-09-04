@@ -1,0 +1,52 @@
+<!-- { TEST } -->
+		<action name="table" class="test.HelloWorld">
+			<result name="success">test1.jsp</result>
+		</action>
+		
+		<action name="test1">
+			<result>test1.jsp</result>
+		</action>
+		
+		<!-- <action name="d1">
+			<result>test/d1p.jsp</result>
+		</action>
+		<action name="d2" class="test.d2">
+			<interceptor-ref name="store">
+      			<param name="operationMode">AUTOMATIC</param>
+    		</interceptor-ref>
+    		<interceptor-ref name="defaultStack" />
+			<result name="success" type="redirect">d3?a=${txt1}</result>
+		</action>
+		<action name="d3">
+			<interceptor-ref name="store">
+		       <param name="operationMode">AUTOMATIC</param>
+		    </interceptor-ref>
+		    
+			<result>test/d2p.jsp</result>
+		</action>
+		<action name="d1" class="test.d3">
+			<param name="mode">ADD</param>
+			<result name="success">/test/d3p.jsp</result>
+		</action>
+		<action name="d2" class="test.d3">
+			<param name="mode">EDIT</param>
+			<result name="success">/test/d3p.jsp</result>
+		</action>
+		<action name="d3">
+			<result>/test/d2p.jsp</result>
+		</action> -->
+		
+		<!-- { TEST } -->
+		<action name="gupload">
+			<result>/test/upload.jsp</result>
+		</action>
+		
+		<action name="upload" class="test.upload">
+			<result name="input">/test/upload.jsp</result>
+			<result name="success">/test/uploaded.jsp</result>
+		</action>
+		
+		<action name="testupload" class="cinema.admin.action.PosterUpload">
+			<result name="input">/test/uploaded.jsp</result>
+			<result name="success">/test/uploaded.jsp</result>
+		</action>
